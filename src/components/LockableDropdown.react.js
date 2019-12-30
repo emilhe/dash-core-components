@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, {Component, lazy, Suspense} from 'react';
-import dropdown from '../utils/LazyLoader/dropdown';
-import '../components/css/custom.css';
+import LazyLoader from '../utils/LazyLoader';
+import '../components/css/ldd.css';
 
-const RealDropdown = lazy(dropdown);
+const RealDropdown = lazy(LazyLoader.dropdown);
 
 /**
  * Dropdown is an interactive dropdown element for selecting one or more
@@ -24,7 +24,7 @@ export default class LockableDropdown extends Component {
             <Suspense fallback={null}>
                 <div className="ldd-container">
                     <RealDropdown {...this.props} />
-                    <div className={locked? "ldd-toggle on" : "ldd-toggle"}
+                    <div className={locked? "ldd-toggle" : "ldd-toggle on"}
                          onClick={() => {
                              if(this.props.setProps){
                                  this.props.setProps({locked: !locked})
