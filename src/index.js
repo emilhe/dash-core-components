@@ -2,6 +2,7 @@
 import ConfirmDialog from './components/ConfirmDialog.react';
 import ConfirmDialogProvider from './components/ConfirmDialogProvider.react';
 import Dropdown from './components/Dropdown.react';
+import LockableDropdown from './components/LockableDropdown.react';
 import Input from './components/Input.react';
 import Graph from './components/Graph.react';
 import RangeSlider from './components/RangeSlider.react';
@@ -30,6 +31,7 @@ export {
     ConfirmDialog,
     ConfirmDialogProvider,
     Dropdown,
+    LockableDropdown,
     Graph,
     Input,
     RadioItems,
