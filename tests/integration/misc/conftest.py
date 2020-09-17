@@ -48,9 +48,7 @@ def platter_app():
                     ),
                     dcc.Tab(
                         label="Tab three",
-                        children=[
-                            html.Div([html.H1("This is the content in tab 3")])
-                        ],
+                        children=[html.Div([html.H1("This is the content in tab 3")])],
                     ),
                 ],
                 style={"fontFamily": "system-ui"},
@@ -76,9 +74,7 @@ def platter_app():
                     ),
                     dcc.Tab(
                         label="Tab three",
-                        children=[
-                            html.Div([html.H1("This is the content in tab 3")])
-                        ],
+                        children=[html.Div([html.H1("This is the content in tab 3")])],
                     ),
                 ],
             ),
@@ -94,18 +90,14 @@ def platter_app():
             dcc.Input(value="", placeholder="type here", id="textinput"),
             html.Label("Disabled Text Input"),
             dcc.Input(
-                value="disabled",
-                type="text",
-                id="disabled-textinput",
-                disabled=True,
+                value="disabled", type="text", id="disabled-textinput", disabled=True,
             ),
             html.Label("Slider"),
             dcc.Slider(
                 min=0,
                 max=9,
                 marks={
-                    i: "Label {}".format(i) if i == 1 else str(i)
-                    for i in range(1, 6)
+                    i: "Label {}".format(i) if i == 1 else str(i) for i in range(1, 6)
                 },
                 value=5,
             ),
@@ -183,9 +175,7 @@ def platter_app():
                 ]
             ),
             html.Label("TextArea"),
-            dcc.Textarea(
-                placeholder="Enter a value... 北京", style={"width": "100%"}
-            ),
+            dcc.Textarea(placeholder="Enter a value... 北京", style={"width": "100%"}),
             html.Label("Markdown"),
             dcc.Markdown(
                 """
@@ -198,7 +188,7 @@ def platter_app():
             [links](https://rexxars.github.io/react-markdown/), inline `code` snippets, lists,
             quotes, and more.
 
-            1. Links are auto-rendered: https://dash.plot.ly.
+            1. Links are auto-rendered: https://dash.plotly.com.
             2. This uses ~commonmark~ GitHub flavored markdown.
 
             Tables are also supported:

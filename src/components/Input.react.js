@@ -30,8 +30,9 @@ export default class Input extends PureComponent {
         this.setPropValue = this.setPropValue.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        const {value, valueAsNumber} = this.input.current;
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        const {value} = this.input.current;
+        const valueAsNumber = convert(value);
         this.setInputValue(
             isNil(valueAsNumber) ? value : valueAsNumber,
             nextProps.value
@@ -42,14 +43,15 @@ export default class Input extends PureComponent {
     }
 
     componentDidMount() {
-        const {value, valueAsNumber} = this.input.current;
+        const {value} = this.input.current;
+        const valueAsNumber = convert(value);
         this.setInputValue(
             isNil(valueAsNumber) ? value : valueAsNumber,
             this.props.value
         );
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         if (this.props.type !== 'number') {
             this.setState({value: this.props.value});
         }
@@ -109,7 +111,8 @@ export default class Input extends PureComponent {
     }
 
     onEvent() {
-        const {value, valueAsNumber} = this.input.current;
+        const {value} = this.input.current;
+        const valueAsNumber = convert(value);
         if (this.props.type === 'number') {
             this.setPropValue(
                 this.props.value,

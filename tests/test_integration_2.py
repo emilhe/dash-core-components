@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import pytest
 import time
-import json
 import flask
 import dash
 from multiprocessing import Value
@@ -16,10 +14,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
 from IntegrationTests import IntegrationTests
 
 TIMEOUT = 10
@@ -75,8 +69,8 @@ class Test2(IntegrationTests):
 
         time.sleep(2)
 
-        # callback is called twice when defined
-        self.assertEqual(call_count.value, 2)
+        # callback is called once when defined
+        self.assertEqual(call_count.value, 1)
 
         # test if link correctly scrolls back to top of page
         test_link = self.wait_for_element_by_css_selector("#test-link")
@@ -88,16 +82,14 @@ class Test2(IntegrationTests):
         page_content = self.wait_for_element_by_css_selector("#page-content")
         self.assertNotEqual(page_content.text, "You are on page /")
 
-        self.wait_for_text_to_equal(
-            "#page-content", "You are on page /test-link"
-        )
+        self.wait_for_text_to_equal("#page-content", "You are on page /test-link")
 
         # test if rendered Link's <a> tag has a href attribute
         link_href = test_link.get_attribute("href")
         self.assertEqual(link_href, "http://localhost:8050/test-link")
 
-        # test if callback is only fired once (offset of 2)
-        self.assertEqual(call_count.value, 3)
+        # test if callback is only fired once more
+        self.assertEqual(call_count.value, 2)
 
     def test_interval(self):
         app = dash.Dash(__name__)
@@ -108,9 +100,7 @@ class Test2(IntegrationTests):
             ]
         )
 
-        @app.callback(
-            Output("output", "children"), [Input("interval", "n_intervals")]
-        )
+        @app.callback(Output("output", "children"), [Input("interval", "n_intervals")])
         def update_text(n):
             return "{}".format(n)
 
@@ -126,10 +116,7 @@ class Test2(IntegrationTests):
         app.layout = html.Div(
             [
                 dcc.Interval(
-                    id="interval",
-                    interval=100,
-                    n_intervals=0,
-                    max_intervals=-1,
+                    id="interval", interval=100, n_intervals=0, max_intervals=-1,
                 ),
                 html.Button("Start", id="start", n_clicks_timestamp=-1),
                 html.Button("Stop", id="stop", n_clicks_timestamp=-1),
@@ -150,15 +137,12 @@ class Test2(IntegrationTests):
             else:
                 return -1
 
-        @app.callback(
-            Output("output", "children"), [Input("interval", "n_intervals")]
-        )
+        @app.callback(Output("output", "children"), [Input("interval", "n_intervals")])
         def display_data(n_intervals):
             return "Updated {}".format(n_intervals)
 
         self.startServer(app=app)
 
-        start_button = self.wait_for_element_by_css_selector("#start")
         stop_button = self.wait_for_element_by_css_selector("#stop")
 
         # interval will start itself, we wait a second before pressing 'stop'
@@ -196,10 +180,7 @@ class Test2(IntegrationTests):
                 ],
             )
             def _on_confirmed(
-                submit_n_clicks,
-                cancel_n_clicks,
-                submit_timestamp,
-                cancel_timestamp,
+                submit_n_clicks, cancel_n_clicks, submit_timestamp, cancel_timestamp,
             ):
                 if not submit_n_clicks and not cancel_n_clicks:
                     return ""
@@ -234,9 +215,7 @@ class Test2(IntegrationTests):
 
         if add_callback:
             self.assertEqual(
-                2,
-                count.value,
-                "Expected 2 callback but got " + str(count.value),
+                2, count.value, "Expected 2 callback but got " + str(count.value),
             )
 
     def test_confirm(self):
@@ -250,9 +229,7 @@ class Test2(IntegrationTests):
             ]
         )
 
-        @app.callback(
-            Output("confirm", "displayed"), [Input("button", "n_clicks")]
-        )
+        @app.callback(Output("confirm", "displayed"), [Input("button", "n_clicks")])
         def on_click_confirm(n_clicks):
             if n_clicks:
                 return True
@@ -303,8 +280,7 @@ class Test2(IntegrationTests):
         )
 
         @app.callback(
-            Output("confirm-container", "children"),
-            [Input("button", "n_clicks")],
+            Output("confirm-container", "children"), [Input("button", "n_clicks")],
         )
         def on_click(n_clicks):
             if n_clicks:
@@ -320,18 +296,6 @@ class Test2(IntegrationTests):
         time.sleep(2)
 
         self.driver.switch_to.alert.accept()
-
-    def test_user_supplied_css(self):
-        app = dash.Dash(__name__)
-
-        app.layout = html.Div(
-            className="test-input-css", children=[dcc.Input()]
-        )
-
-        self.startServer(app)
-
-        self.wait_for_element_by_css_selector(".test-input-css")
-        self.snapshot("styled input - width: 100%, border-color: hotpink")
 
     def test_logout_btn(self):
         app = dash.Dash(__name__)
@@ -350,9 +314,7 @@ class Test2(IntegrationTests):
             ]
         )
 
-        @app.callback(
-            Output("content", "children"), [Input("location", "pathname")]
-        )
+        @app.callback(Output("content", "children"), [Input("location", "pathname")])
         def on_location(location_path):
             if location_path is None:
                 raise PreventUpdate
@@ -372,49 +334,12 @@ class Test2(IntegrationTests):
         time.sleep(1)
         self.snapshot("Logout button")
 
-        self.assertEqual(
-            "logged-in", self.driver.get_cookie("logout-cookie")["value"]
-        )
+        self.assertEqual("logged-in", self.driver.get_cookie("logout-cookie")["value"])
         logout_button = self.wait_for_element_by_css_selector("#logout-btn")
         logout_button.click()
         self.wait_for_text_to_equal("#content", "Logged out")
 
         self.assertFalse(self.driver.get_cookie("logout-cookie"))
-
-    def test_simple_callback(self):
-        app = dash.Dash(__name__)
-        app.layout = html.Div(
-            [
-                dcc.Input(id="input"),
-                html.Div(
-                    html.Div([1.5, None, "string", html.Div(id="output-1")])
-                ),
-            ]
-        )
-
-        call_count = Value("i", 0)
-
-        @app.callback(
-            Output("output-1", "children"), [Input("input", "value")]
-        )
-        def update_output(value):
-            call_count.value = call_count.value + 1
-            return value
-
-        self.startServer(app)
-
-        input1 = self.wait_for_element_by_css_selector("#input")
-        input1.send_keys("hello world")
-        output1 = self.wait_for_element_by_css_selector("#output-1")
-        self.wait_for_text_to_equal("#output-1", "hello world")
-        output1.click()  # Lose focus, no callback sent for value.
-
-        self.assertEqual(
-            call_count.value,
-            # an initial call to retrieve the first value
-            # plus one for each hello world character
-            1 + len("hello world"),
-        )
 
     def test_disabled_tab(self):
         app = dash.Dash(__name__)
@@ -450,7 +375,5 @@ class Test2(IntegrationTests):
         )
 
         WebDriverWait(self.driver, TIMEOUT).until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, ".tab--disabled")
-            )
+            EC.visibility_of_element_located((By.CSS_SELECTOR, ".tab--disabled"))
         )
